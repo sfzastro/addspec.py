@@ -31,6 +31,7 @@ import subprocess
 from xmin.utility import pushd
 from shutil import copy2
 from os import remove
+from heasoftpy import mathpha
 
 def remove(filename):
     if os.path.exists(filename):
@@ -48,9 +49,10 @@ def sum_pha(outfile, filenames, backscals, areascals, rel_weights, **kwargs):
     for f,t in zip(filenames, incurrentfolder):
         copy2(f, t)
 
-    run(['mathpha', 'expr=' + '+'.join(incurrentfolder), "outfil=" + outfile,
-        'units=C', 'exposure=CALC', 'properr=NO', 'errmeth=POISS-0', 'areascal=NULL',
-        'ncomments=1', "comment1=Created_by_addspec.py_alpha", 'chatter=5'])
+    mathpha(expr='+'.join(incurrentfolder), outfil=outfile, units='C',
+            exposure='CALC', properr='NO', errmeth='POISS-0', areascal='NULL',
+            ncomments=1, comment1="Created_by_addspec.py_alpha",
+            comment2="", comment3="", comment4="", chatter=5)
     for f in incurrentfolder:
         remove(f)
 
