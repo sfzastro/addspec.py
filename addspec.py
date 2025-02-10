@@ -23,14 +23,11 @@ SOFTWARE.
 
 """
 
-from os.path import dirname
-import numpy as np
 import sys, os
+import numpy as np
 import astropy.io.fits as pyfits
-import subprocess
-from xmin.utility import pushd
+from os.path import dirname
 from shutil import copy2
-from os import remove
 from heasoftpy import mathpha, addrmf, addarf, fmodhead
 
 def remove(filename):
