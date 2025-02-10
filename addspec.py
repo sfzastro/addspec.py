@@ -31,15 +31,11 @@ import subprocess
 from xmin.utility import pushd
 from shutil import copy2
 from os import remove
-from heasoftpy import mathpha
+from heasoftpy import mathpha, addrmf, addarf, fmodhead
 
 def remove(filename):
     if os.path.exists(filename):
         os.unlink(filename)
-
-def run(*args, **kwargs):
-    print("    running command:", *args)
-    subprocess.check_call(*args, **kwargs)
 
 def sum_pha(outfile, filenames, backscals, areascals, rel_weights, **kwargs):
     print()
@@ -69,7 +65,7 @@ def sum_pha(outfile, filenames, backscals, areascals, rel_weights, **kwargs):
         for k, v in kwargs.items():
             fout.write("%s %s\n" % (k, v))
 
-    run(['fmodhead', outfile + '[SPECTRUM]', '.tmp.modhead'])
+    fmodhead(infile=f"{outfile}[SPECTRUM]", tmpfil='.tmp.modhead')
     os.unlink('.tmp.modhead')
 
 
@@ -136,14 +132,14 @@ def main(outprefix, filenames):
 
     print("combining ARFs:", arfs)
     arf = outprefix + '.arf'
-    run(['addarf', ' '.join(arfs), weightstr, arf, 'clobber=yes'])
+    addarf(list=" ".join(arfs), weights=weightstr, out_ARF=arf, clobber=True)
     barf = outprefix + '_bkg.arf'
-    run(['addarf', ' '.join(barfs), bweightstr, barf, 'clobber=yes'])
+    addarf(list=" ".join(barfs), weights=bweightstr, out_ARF=barf, clobber=True)
     print("combining RMFs:", rmfs)
     rmf = outprefix + '.rmf'
-    run(['addrmf', ' '.join(rmfs), weightstr, rmf, 'clobber=yes'])
+    addrmf(list=" ".join(rmfs), weights=weightstr, rmffile=rmf, clobber=True)
     brmf = outprefix + '_bkg.rmf'
-    run(['addrmf', ' '.join(brmfs), bweightstr, brmf, 'clobber=yes'])
+    addrmf(list=" ".join(brmfs), weights=bweightstr, rmffile=brmf, clobber=True)
 
     outfile = "%s.pha" % outprefix
     boutfile = "%s_bkg.pha" % outprefix
