@@ -39,7 +39,7 @@ def sum_pha(outfile, filenames, backscals, areascals, rel_weights, **kwargs):
     print("creating '%s' ..." % outfile)
     remove(outfile)
     incurrentfolder = [f"spec_{i}.pha" for (i, f) in enumerate(filenames)]
-    for f,t in zip(filenames, incurrentfolder):
+    for f, t in zip(filenames, incurrentfolder):
         copy2(f, t)
 
     mathpha(expr='+'.join(incurrentfolder), outfil=outfile, units='C',
@@ -128,37 +128,32 @@ def main(outprefix, filenames):
     assert len(brmfs) == N
 
     print("combining ARFs:", arfs)
-    arf = outprefix + '.arf'
-    addarf(list=" ".join(arfs), weights=weightstr, out_ARF=arf, clobber=True)
-    barf = outprefix + '_bkg.arf'
-    addarf(list=" ".join(barfs), weights=bweightstr, out_ARF=barf, clobber=True)
+    addarf(list=" ".join(arfs), weights=weightstr, out_ARF=f"{outprefix}.arf", clobber=True)
+    addarf(list=" ".join(barfs), weights=bweightstr, out_ARF=f"{outprefix}_bkg.arf", clobber=True)
     print("combining RMFs:", rmfs)
-    rmf = outprefix + '.rmf'
-    addrmf(list=" ".join(rmfs), weights=weightstr, rmffile=rmf, clobber=True)
-    brmf = outprefix + '_bkg.rmf'
-    addrmf(list=" ".join(brmfs), weights=bweightstr, rmffile=brmf, clobber=True)
+    addrmf(list=" ".join(rmfs), weights=weightstr, rmffile=f"{outprefix}.rmf", clobber=True)
+    addrmf(list=" ".join(brmfs), weights=bweightstr, rmffile=f"{outprefix}_bkg.rmf", clobber=True)
 
-    outfile = "%s.pha" % outprefix
-    boutfile = "%s_bkg.pha" % outprefix
+    arf = f'{outprefix}.arf'
 
     sum_pha(
-        outfile = outfile,
+        outfile = f"{outprefix}.pha",
         filenames = filenames,
         areascals = areascals,
         backscals = backscals,
         rel_weights = rel_weights,
-        ANCRFILE = arf,
-        RESPFILE = rmf,
-        BACKFILE = boutfile,
+        ANCRFILE = f"{outprefix}.arf".split('/')[-1],
+        RESPFILE = f"{outprefix}.rmf".split('/')[-1],
+        BACKFILE = f"{outprefix}_bkg.pha".split('/')[-1],
     )
     sum_pha(
-        outfile = boutfile,
+        outfile = f"{outprefix}_bkg.pha",
         filenames = bfilenames,
         areascals = bareascals,
         backscals = bbackscals,
         rel_weights = rel_bweights,
-        ANCRFILE = barf,
-        RESPFILE = brmf,
+        ANCRFILE = f"{outprefix}_bkg.arf".split('/')[-1],
+        RESPFILE = f"{outprefix}_bkg.rmf".split('/')[-1],
     )
 
 if __name__ == '__main__':
